@@ -23,6 +23,12 @@
  along with Archibp. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
+define('PLUGIN_ARCHIBP_VERSION', '2.0.13');
+
+// Minimal GLPI version, inclusive
+define('PLUGIN_ARCHIBP_MIN_GLPI', '10.0.0');
+// Maximum GLPI version, exclusive
+define('PLUGIN_ARCHIBP_MAX_GLPI', '11.0.99');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_archibp() {
@@ -111,14 +117,15 @@ function plugin_version_archibp() {
 
    return array (
       'name' => _n('Business Process', 'Business Processes', 2, 'archibp'),
-      'version' => '2.0.12',
+      'version' => PLUGIN_ARCHIBP_VERSION,
       'author'  => "Eric Feron",
       'license' => 'GPLv2+',
       'homepage'=>'https://github.com/ericferon/glpi-archibp',
       'requirements' => [
          'glpi' => [
-            'min' => '10.0',
-            'dev' => false
+            'min' => PLUGIN_ARCHIBP_MIN_GLPI,
+            'max' => PLUGIN_ARCHIBP_MAX_GLPI,
+//            'dev' => false
          ]
       ]
    );
@@ -128,21 +135,13 @@ function plugin_version_archibp() {
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_archibp_check_prerequisites() {
    global $DB;
-   if (version_compare(GLPI_VERSION, '10.0', 'lt')
-       || version_compare(GLPI_VERSION, '10.1', 'ge')) {
-      if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '10.0');
-      }
-      return false;
-   } else {
 		$query = "select * from glpi_plugins where directory in ('archisw', 'statecheck') and state = 1";
-		$result_query = $DB->query($query);
+		$result_query = $DB->doQuery($query);
 		if($DB->numRows($result_query) == 2) {
 			return true;
 		} else {
 			echo "The 2 plugins 'archisw' (a.k.a Apps structure inventory) and 'statecheck' must be installed before using 'archibp' (Business Process)";
 		}
-	}
 }
 
 // Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
@@ -166,7 +165,7 @@ function hook_pre_item_add_archibp_configbp(CommonDBTM $item) {
       if($item->fields['plugin_archibp_configbpdatatypes_id'] == 6) {// if dropdown, add key
          $query .= ", ADD KEY IF NOT EXISTS $fieldname ($fieldname)";
       }
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       return true;
    }
    return false;
@@ -186,7 +185,7 @@ function hook_pre_item_update_archibp_configbp(CommonDBTM $item) {
       if($item->input['plugin_archibp_configbpdatatypes_id'] == 6) {// if dropdown, add key
          $query .= ", ADD KEY IF NOT EXISTS $newfieldname ($newfieldname)";
       }
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       return true;
    }
    return false;
@@ -195,7 +194,7 @@ function hook_pre_item_purge_archibp_configbp(CommonDBTM $item) {
    global $DB;
    $fieldname = $item->fields['name'];
    $query = "ALTER TABLE `glpi_plugin_archibp_tasks` DROP COLUMN IF EXISTS $fieldname";
-   $result = $DB->query($query);
+   $result = $DB->doQuery($query);
    return true;
 }
 ?>

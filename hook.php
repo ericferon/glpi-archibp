@@ -47,8 +47,8 @@ function plugin_archibp_install() {
          $DB->runFile(Plugin::getPhpDir("archibp")."/sql/update-2.0.0.sql");
       }
 
-      if ($DB->numrows($DB->query("SELECT * from glpi_plugin_archibp_configbphaligns where id = '7'")) == 0) {
-         $DB->runFile(Plugin::getPhpDir("archibp")."/sql/update-2.0.1.sql");
+      if ($DB->numrows($DB->doQuery("SELECT * from glpi_plugin_archibp_configbphaligns where id = '7'")) == 0) {
+         $DB->runFile(Plugin::getPhpDir("archibp")."/sql/update-2.0.2.sql");
       }
    }
    // regenerate configbpured fields
@@ -57,7 +57,7 @@ function plugin_archibp_install() {
                FROM `glpi_plugin_archibp_configbplinks` 
                JOIN `glpi_plugin_archibp_configbps`  ON `glpi_plugin_archibp_configbplinks`.`id` = `glpi_plugin_archibp_configbps`.`plugin_archibp_configbplinks_id` 
                WHERE `glpi_plugin_archibp_configbplinks`.`name` like 'PluginArchibp%'";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $item = new CommonDBTM;
       while ($data = $DB->fetchAssoc($result)) {
          $item->input['name'] = $data['classname'];
@@ -84,25 +84,25 @@ function plugin_archibp_uninstall() {
    include_once (Plugin::getPhpDir("archibp")."/inc/menu.class.php");
    
    $query = "SELECT `id` FROM `glpi_plugin_statecheck_tables` WHERE `name` = 'glpi_plugin_archibp_configbps'";
-   $result = $DB->query($query);
+   $result = $DB->doQuery($query);
    $rowcount = $DB->numrows($result);
    if ($rowcount > 0) {
       while ($data = $DB->fetchAssoc($result)) {
          $tableid = $data['id'];
          $rulequery = "SELECT `id` FROM `glpi_plugin_statecheck_rules` WHERE `plugin_statecheck_tables_id` = '".$tableid."'";
-         $ruleresult = $DB->query($rulequery);
+         $ruleresult = $DB->doQuery($rulequery);
          while ($ruledata = $DB->fetchAssoc($ruleresult)) {
             $ruleid = $ruledata['id'];
             $query = "DELETE FROM `glpi_plugin_statecheck_ruleactions` WHERE `plugin_statecheck_rules_id` = '".$ruleid."'";
-            $DB->query($query);
+            $DB->doQuery($query);
             $query = "DELETE FROM `glpi_plugin_statecheck_rulecriterias` WHERE `plugin_statecheck_rules_id` = '".$ruleid."'";
-            $DB->query($query);
+            $DB->doQuery($query);
          }
          $query = "DELETE FROM `glpi_plugin_statecheck_rules` WHERE `plugin_statecheck_tables_id` = '".$tableid."'";
-         $DB->query($query);
+         $DB->doQuery($query);
       }
       $query = "DELETE FROM `glpi_plugin_statecheck_tables` WHERE `name` like 'glpi_plugin_archibp_%'";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
    }
 
 	$tables = ["glpi_plugin_archibp_tasks",
@@ -117,7 +117,7 @@ function plugin_archibp_uninstall() {
               ];
 
    $query = "SELECT `name` FROM `glpi_plugin_archibp_configbplinks` WHERE `name` LIKE 'PluginArchibp%' AND (`as_view_on` IS NULL OR `as_view_on` = '')";
-   $result = $DB->query($query);
+   $result = $DB->doQuery($query);
    while ($data = $DB->fetchAssoc($result)) {
       $tablename = CommonDBTM::getTable($data['name']);
       if (!in_array($tablename,$tables))
@@ -125,11 +125,11 @@ function plugin_archibp_uninstall() {
    }
 
    foreach($tables as $table)
-      $DB->query("DROP TABLE IF EXISTS `$table`;");
+      $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
 
    $views = ["glpi_plugin_archibp_swcomponents"];
    $query = "SELECT `name` FROM `glpi_plugin_archibp_configbplinks` WHERE `name` LIKE 'PluginArchibp%' AND (`as_view_on` IS NOT NULL AND `as_view_on` <> '')";
-   $result = $DB->query($query);
+   $result = $DB->doQuery($query);
    while ($data = $DB->fetchAssoc($result)) {
       $tablename = CommonDBTM::getTable($data['name']);
       if (!in_array($tablename,$tables))
@@ -137,7 +137,7 @@ function plugin_archibp_uninstall() {
    }
 				
 	foreach($views as $view)
-		$DB->query("DROP VIEW IF EXISTS `$view`;");
+		$DB->doQuery("DROP VIEW IF EXISTS `$view`;");
 
 	$tables_glpi = ["glpi_displaypreferences",
                "glpi_documents_items",
@@ -149,9 +149,9 @@ function plugin_archibp_uninstall() {
                "glpi_impactitems"];
 
    foreach($tables_glpi as $table_glpi)
-      $DB->query("DELETE FROM `$table_glpi` WHERE `itemtype` LIKE 'PluginArchibp%' ;");
+      $DB->doQuery("DELETE FROM `$table_glpi` WHERE `itemtype` LIKE 'PluginArchibp%' ;");
 
-   $DB->query("DELETE
+   $DB->doQuery("DELETE
                   FROM `glpi_impactrelations`
                   WHERE `itemtype_source` IN ('PluginArchibpTask')
                     OR `itemtype_impacted` IN ('PluginArchibpTask')");
@@ -206,7 +206,7 @@ function plugin_archibp_getTaskRelations() {
 					 ];
 
       $query = "SELECT `name` FROM `glpi_plugin_archibp_configbplinks` WHERE `name` like 'PluginArchibp%'";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       while ($data = $DB->fetchAssoc($result)) {
          $tablename = CommonDBTM::getTable($data['name']);
          if (!in_array($tablename,$tables)) {
@@ -240,7 +240,7 @@ function plugin_archibp_getDropdown() {
                FROM `glpi_plugin_archibp_configbplinks` 
                JOIN `glpi_plugin_archibp_configbps`  ON `glpi_plugin_archibp_configbplinks`.`id` = `glpi_plugin_archibp_configbps`.`plugin_archibp_configbplinks_id` 
                WHERE `glpi_plugin_archibp_configbplinks`.`name` like 'PluginArchibp%' AND (`glpi_plugin_archibp_configbplinks`.`as_view_on` IS NULL OR `glpi_plugin_archibp_configbplinks`.`as_view_on` = '')";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       while ($data = $DB->fetchAssoc($result)) {
          $classname = $data['classname'];
          if (!in_array($classname,$classes))
@@ -372,7 +372,7 @@ function hook_pre_item_add_archibp_configbplink(CommonDBTM $item) {
             $query = "CREATE VIEW `$tablename` (`id`,$entities `name`, `comment`, `completename`, `level`, `is_recursive`) AS 
                   SELECT `id`,$entities `name`, `comment`, `completename`, `level`, `is_recursive` FROM $newasviewon".(empty($newviewlimit)?"":" WHERE $newviewlimit");
          }
-         $result = $DB->query($query);
+         $result = $DB->doQuery($query);
       }
       else {
          $entities = ($newisentitylimited?"`entities_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,":"");
@@ -386,7 +386,7 @@ function hook_pre_item_add_archibp_configbplink(CommonDBTM $item) {
                   PRIMARY KEY (`id`) ,
                   UNIQUE INDEX `".$tablename."_name` (`name`) )
                   DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
          }
          else { //treedropdown->create table
             $query = "CREATE TABLE IF NOT EXISTS `".$tablename."` (
@@ -403,7 +403,7 @@ function hook_pre_item_add_archibp_configbplink(CommonDBTM $item) {
                         PRIMARY KEY (`id`) ,
                         UNIQUE INDEX `".$tablename."_name` (`name`) )
                         DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
          }
       }
       create_plugin_archibp_classfiles($dir, $newclassname, $newistreedropdown);
@@ -434,9 +434,9 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
             $oldtablename = 'glpi_plugin_archibp_'.getPlural($oldrootname);
             $oldfieldname = 'plugin_archibp_'.getPlural($oldrootname).'_id';
             $query = "RENAME TABLE `".$oldtablename."` TO `".$newtablename."`";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
             $query = "UPDATE `glpi_plugin_archibp_configbplinks` SET `name` = '".$newclassname."' WHERE `name` = '".$oldclassname."'";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
          }
          else {// no change dropdown name
             // if dropdown table is a view, replace the old view
@@ -452,7 +452,7 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
                   $query = "CREATE OR REPLACE VIEW `$newtablename` (`id`,$entities `name`, `comment`, `completename`, `level`, `is_recursive`) AS 
                         SELECT `id`,$entities `name`, `comment`, `completename`, `level`, `is_recursive` FROM $newasviewon".(empty($newviewlimit)?"":" WHERE $newviewlimit");
                }
-               $result = $DB->query($query);
+               $result = $DB->doQuery($query);
             }
             else {
                // if dropdown table is really a table ...
@@ -465,7 +465,7 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
                      ADD COLUMN `level` INT NOT NULL DEFAULT 0 AFTER `completename`,
                      ADD COLUMN `sons_cache` LONGTEXT NULL AFTER `level`,
                      ADD COLUMN `ancestors_cache` LONGTEXT NULL AFTER `sons_cache`";
-                  $result = $DB->query($query);
+                  $result = $DB->doQuery($query);
                }
                else if ($oldistreedropdown && !$newistreedropdown) {
                   // old type was treedropdown and new one is dropdown=>drop the unneeded fields
@@ -475,18 +475,18 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
                      DROP COLUMN `level`,
                      DROP COLUMN `sons_cache`,
                      DROP COLUMN `ancestors_cache`";
-                  $result = $DB->query($query);
+                  $result = $DB->doQuery($query);
                }
                // 'is_entity_limited' has changed
                if (!$item->fields['is_entity_limited'] && $item->input['is_entity_limited']) { // 'is_entity_limited' changed from no to yes
                // => add 'entities_id' column to dropdown table
                   $query = "ALTER TABLE $newtablename ADD COLUMN IF NOT EXISTS `entities_id` INT(11) UNSIGNED NOT NULL DEFAULT 0 AFTER `id`";
-                  $result = $DB->query($query);
+                  $result = $DB->doQuery($query);
                }
                else if ($item->fields['is_entity_limited'] && !$item->input['is_entity_limited']) { // 'is_entity_limited' changed from yes to no
                // => drop 'entities_id' column from dropdown table
                   $query = "ALTER TABLE $newtablename DROP COLUMN `entities_id`";
-                  $result = $DB->query($query);
+                  $result = $DB->doQuery($query);
                }
             }
          }
@@ -505,7 +505,7 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
                $query = "CREATE VIEW `$tablename` (`id`,$entities `name`, `comment`, `completename`, `level`, `is_recursive`) AS 
                   SELECT `id`,$entities `name`, `comment`, `completename`, `level`, `is_recursive` FROM $newasviewon".(empty($newviewlimit)?"":" WHERE $newviewlimit");
             }
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
          }
          else {
             $entities = ($item->input['is_entity_limited']?"`entities_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,":""); // with or without 'entities_id' column
@@ -520,7 +520,7 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
                   PRIMARY KEY (`id`) ,
                   UNIQUE INDEX `".$newtablename."_name` (`name`) )
                   DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
             } 
             else { // new treedropdon table
                $query = "CREATE TABLE IF NOT EXISTS `".$newtablename."` (
@@ -537,7 +537,7 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
                   PRIMARY KEY (`id`) ,
                   UNIQUE INDEX `".$newtablename."_name` (`name`) )
                   DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
             }
          }
       }
@@ -552,9 +552,9 @@ function hook_pre_item_update_archibp_configbplink(CommonDBTM $item) {
       $oldfieldname = 'plugin_archibp_'.getPlural($oldrootname).'_id';
       $tableorview = empty($oldasviewon)?"TABLE":"VIEW";
       $query = "DROP $tableorview IF EXISTS `".$oldtablename."`";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $query = "DELETE FROM `glpi_plugin_archibp_configbplinks` WHERE `name` = '".$oldclassname."'";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       // delete files in inc and front directories
       if (file_exists($dir.'/inc/'.$oldfilename.'.class.php')) 
          unlink($dir.'/inc/'.$oldfilename.'.class.php');
@@ -574,13 +574,13 @@ function hook_pre_item_purge_archibp_configbplink(CommonDBTM $item) {
    $oldid = $item->fields['id'];
    // suppress in glpi_plugin_archibp_configbps
    $query = "UPDATE `glpi_plugin_archibp_configbps` SET `plugin_archibp_configbplinks_id` = 0 WHERE `plugin_archibp_configbplinks_id` = '".$oldid."'";
-   $result = $DB->query($query);
+   $result = $DB->doQuery($query);
    if (substr($oldclassname, 0, 13) == 'PluginArchibp') {
       $oldtablename = 'glpi_plugin_archibp_'.getPlural($oldrootname);
       $oldfieldname = 'plugin_archibp_'.getPlural($oldrootname).'_id';
       $tableorview = empty($oldasviewon)?"TABLE":"VIEW";
       $query = "DROP $tableorview IF EXISTS `".$oldtablename."`";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       // delete files in inc and front directories
       if (file_exists($dir.'/inc/'.$oldfilename.'.class.php')) 
          unlink($dir.'/inc/'.$oldfilename.'.class.php');
