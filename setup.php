@@ -23,10 +23,10 @@
  along with Archibp. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-define('PLUGIN_ARCHIBP_VERSION', '2.0.13');
+define('PLUGIN_ARCHIBP_VERSION', '2.0.14');
 
 // Minimal GLPI version, inclusive
-define('PLUGIN_ARCHIBP_MIN_GLPI', '10.0.0');
+define('PLUGIN_ARCHIBP_MIN_GLPI', '11.0.0');
 // Maximum GLPI version, exclusive
 define('PLUGIN_ARCHIBP_MAX_GLPI', '11.0.99');
 
@@ -41,7 +41,7 @@ function plugin_init_archibp() {
    $PLUGIN_HOOKS['assign_to_ticket_dropdown']['archibp'] = true;
    $PLUGIN_HOOKS['assign_to_ticket_itemtype']['archibp'] = ['PluginArchibpTask_Item'];
    
-   $CFG_GLPI['impact_asset_types']['PluginArchibpTask'] = Plugin::getWebDir("archibp", false)."/bp.png";
+   $CFG_GLPI['impact_asset_types']['PluginArchibpTask'] = "/plugins/archibp/bp.png";
 
    Plugin::registerClass('PluginArchibpTask', array(
          'linkgroup_tech_types'   => true,

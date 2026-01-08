@@ -36,6 +36,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
    
    static $types = ['Group', 
 //					'PluginArchidataDataelement',
+                    'KnowbaseItem',
 					'Entity',
 					'PluginArchifunFuncarea',
 //					'PluginArchibpSwcomponent'
@@ -94,7 +95,6 @@ class PluginArchibpTask extends CommonTreeDropdown {
    global $DB;
 
       $tab = [];
-      if (version_compare(GLPI_VERSION,'9.2','le')) return $tab;
 
       $tab[] = [
          'id'   => 'common',
@@ -112,7 +112,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
 
       $linktable = [];
       $tablequery = "SELECT * FROM `glpi_plugin_archibp_configbplinks`";
-      $tableresult = $DB->query($tablequery);
+      $tableresult = $DB->doQuery($tablequery);
       while ($tabledata = $DB->fetchAssoc($tableresult)) {
          $linktable[$tabledata['id']]['name'] = $tabledata['name'];
          $linktable[$tabledata['id']]['has_dropdown'] = $tabledata['has_dropdown'];
@@ -121,7 +121,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
 
       $datatypetable = [];
       $datatypequery = "SELECT * FROM `glpi_plugin_archibp_configbpdatatypes`";
-      $datatyperesult = $DB->query($datatypequery);
+      $datatyperesult = $DB->doQuery($datatypequery);
       while ($datatypedata = $DB->fetchAssoc($datatyperesult)) {
          $datatypetable[$datatypedata['id']]['name'] = $datatypedata['name'];
       }
@@ -130,7 +130,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
                 FROM `glpi_plugin_archibp_configbps` 
                 WHERE `is_deleted` = 0 
                 ORDER BY `id`";
-      $fieldresult = $DB->query($fieldquery);
+      $fieldresult = $DB->doQuery($fieldquery);
       $rowcount = $DB->numrows($fieldresult);
       $tabid = 1; // tabid 1 is used for name
       $tabtable = $this->getTable();
@@ -239,7 +239,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
       $columnquery = "SELECT * 
                 FROM `glpi_plugin_archibp_configbps` 
                 WHERE `is_deleted` = 0 AND `plugin_archibp_configbphaligns_id` in (3,4,5)";
-      $columnresult = $DB->query($columnquery);
+      $columnresult = $DB->doQuery($columnquery);
       $rowcount = $DB->numrows($columnresult);
       if ($rowcount == 0) {
          $columncount = 4;
@@ -275,7 +275,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
 
       $linktable = [];
       $tablequery = "SELECT * FROM `glpi_plugin_archibp_configbplinks`";
-      $tableresult = $DB->query($tablequery);
+      $tableresult = $DB->doQuery($tablequery);
       while ($tabledata = $DB->fetchAssoc($tableresult)) {
          $linktable[$tabledata['id']]['name'] = $tabledata['name'];
          $linktable[$tabledata['id']]['has_dropdown'] = $tabledata['has_dropdown'];
@@ -286,7 +286,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
                 FROM `glpi_plugin_archibp_configbps` 
                 WHERE `is_deleted` = 0 AND `plugin_archibp_configbpfieldgroups_id` = 0 
                 ORDER BY `row`, `plugin_archibp_configbphaligns_id`";
-      $fieldresult = $DB->query($fieldquery);
+      $fieldresult = $DB->doQuery($fieldquery);
       $rowcount = $DB->numrows($fieldresult);
       if ($rowcount > 0) {
          $fgroupname = '';
@@ -395,7 +395,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
       $fgroupquery = "SELECT * 
                 FROM `glpi_plugin_archibp_configbpfieldgroups` 
                 ORDER BY `sortorder`";
-      $fgroupresult = $DB->query($fgroupquery);
+      $fgroupresult = $DB->doQuery($fgroupquery);
 
       while ($fgroupdata = $DB->fetchAssoc($fgroupresult)) {
          $fgroupid = $fgroupdata['id'];
@@ -407,7 +407,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
                 FROM `glpi_plugin_archibp_configbps` 
                 WHERE `is_deleted` = 0 AND `plugin_archibp_configbpfieldgroups_id` = $fgroupid 
                 ORDER BY `row`, `plugin_archibp_configbphaligns_id`";
-         $fieldresult = $DB->query($fieldquery);
+         $fieldresult = $DB->doQuery($fieldquery);
          $rowcount = $DB->numrows($fieldresult);
          if ($rowcount > 0) {
             // Accordion separator
@@ -642,7 +642,7 @@ class PluginArchibpTask extends CommonTreeDropdown {
                                FROM `glpi_plugin_archibp_tasks`
                              $where)
                 ORDER BY `name`";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       $values = [0 => Dropdown::EMPTY_VALUE];
 
@@ -662,14 +662,14 @@ class PluginArchibpTask extends CommonTreeDropdown {
                         'used'   => $p['used']];
 
       $out .= Ajax::updateItemOnSelectEvent($field_id,"show_".$p['name'].$rand,
-                                            Plugin::getWebDir("archibp")."/ajax/dropdownTypeArchibp.php",
+                                            "/plugins/archibp/ajax/dropdownTypeArchibp.php",
                                             $params, false);
       $out .= "<span id='show_".$p['name']."$rand'>";
       $out .= "</span>\n";
 
       $params['tasktype'] = 0;
       $out .= Ajax::updateItem("show_".$p['name'].$rand,
-                               Plugin::getWebDir("archibp")."/ajax/dropdownTypeArchibp.php",
+                               "/plugins/archibp/ajax/dropdownTypeArchibp.php",
                                $params, false);
       if ($p['display']) {
          echo $out;

@@ -24,7 +24,6 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
 
 Html::header(PluginArchibpConfigbp::getTypeName(2), '', "config", "pluginarchibpconfigbpmenu");
 $configbp = new PluginArchibpConfigbp();

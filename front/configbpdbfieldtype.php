@@ -24,7 +24,6 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
 
 $dropdown = new PluginArchibpConfigbpDbfieldtype();
 include (GLPI_ROOT . "/front/dropdown.common.php");

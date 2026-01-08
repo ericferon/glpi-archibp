@@ -43,7 +43,6 @@ class PluginArchibpConfigbp extends CommonDBTM {
    function rawSearchOptions() {
 
       $tab = [];
-//      if (version_compare(GLPI_VERSION,'9.2','le')) return $tab;
 
       $tab[] = [
          'id'   => 'common',

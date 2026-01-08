@@ -24,7 +24,6 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
 
 $plugin = new Plugin();
    Html::header(PluginArchibpTask::getTypeName(2), '', "assets","pluginarchibpmenu");

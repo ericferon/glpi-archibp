@@ -24,7 +24,6 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
 
 $dropdown = new PluginArchibpConfigbpHalign();
 include (GLPI_ROOT . "/front/dropdown.common.form.php");

@@ -23,7 +23,6 @@
  along with Archibp. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-      include ('../../../inc/includes.php');
       $dropdown = new PluginArchibpTaskTarget();
       include (GLPI_ROOT . '/front/dropdown.common.form.php');
       ?>

@@ -31,7 +31,7 @@ function plugin_archibp_install() {
 
    if (!$DB->TableExists("glpi_plugin_archibp_tasks")) {
 
-		$DB->runFile(Plugin::getPhpDir("archibp")."/sql/empty-2.0.1.sql");
+		$DB->runFile(Plugin::getPhpDir("archibp")."/sql/empty-2.0.2.sql");
 	}
    else 
    {
@@ -655,7 +655,6 @@ function create_plugin_archibp_classfiles($dir, $newclassname, $istreedropdown =
  along with Archibp. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-      include ('../../../inc/includes.php');
       \$dropdown = new $newclassname();
       include (GLPI_ROOT . '/front/dropdown.common.form.php');
       ?>");
@@ -685,7 +684,6 @@ function create_plugin_archibp_classfiles($dir, $newclassname, $istreedropdown =
  along with Archibp. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-      include ('../../../inc/includes.php');
       \$dropdown = new $newclassname();
       include (GLPI_ROOT . '/front/dropdown.common.php');
       ?>");

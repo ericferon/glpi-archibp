@@ -25,7 +25,6 @@
  --------------------------------------------------------------------------
  */
 
-include ("../../../inc/includes.php");
 
 $configbp = new PluginArchibpConfigbp();
 

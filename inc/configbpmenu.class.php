@@ -35,7 +35,7 @@ class PluginArchibpConfigbpMenu extends CommonGLPI {
 
 		$menu                                           = [];
 		$menu['title']                                  = self::getMenuName();
-		$menu['page']                                   = "/".Plugin::getWebDir('archibp', false)."/front/configbp.php";
+		$menu['page']                                   = "/plugins/archibp/front/configbp.php";
 		$menu['links']['search']                        = PluginArchibpConfigbp::getSearchURL(false);
 		if (PluginArchibpConfigbp::canCreate()) {
 			$menu['links']['add']                        = PluginArchibpConfigbp::getFormURL(false);
